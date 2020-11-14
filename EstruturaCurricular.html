@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estrutura Curricular</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            border: none;
+            text-align: center;
+        }
+        body {
+            background-color: darkgrey;
+            position: relative;
+        }
+        #title {
+            font-size: 24px;
+        }
+        .flex, div {
+            display: flex;
+            overflow: auto;
+        }
+        .margin_children > * {
+            margin: 5px;
+        }
+        .column {
+            flex-direction: column;
+        }
+        .openable {
+            width: calc(100vw - 17px);
+            min-height: max(5vh , 32px);
+            background-color: black;
+            display: grid;
+            grid-template-rows: calc(5vh - 2px) 1fr;
+        }
+        .openable > div {
+            justify-content: space-between;
+            min-height: max(5vh , 32px);
+        }
+        .openable > div > h2 {
+            text-align: start;
+        }
+        .single_filter {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            justify-items: center;
+        }
+        #buttons {
+            background-color: dimgrey;
+        }
+        #intersect_button, #unite_button, #modal_options button {
+            border: 1px solid darkgrey;
+            background-color: grey;
+            width: 150px;
+            font-size: 14px;
+        }
+        .header_slot > p, .hide_name {
+            font-size: 14px;
+        }
+        #table_container {
+            width: calc(100vw - 10px);
+            max-height: calc(65vh - 10px);
+        }
+        #table > * {
+            margin: 0 5px;
+        }
+        .header_slot, .table_slot {
+            min-width: 98px;
+            max-width: 98px;
+            overflow-x: hidden;
+            background-color: black;
+            word-break: break-word;
+        }
+        #name_header, .name_slot {
+            min-width: 148px;
+            max-width: 148px;
+        }
+        .openable, .header_slot, .table_slot {
+            border: 1px solid darkgray;
+        }
+        .openable *, .header_slot *, .table_slot, li {
+            color: aliceblue;
+        }
+        .header_slot {
+            justify-content: space-evenly;
+        }
+        .table_line, #table_content, #table_header {
+            overflow: unset;
+        }
+        #tips {
+            margin: 10px;
+            width: calc(100vw - 15px);
+        }
+        
+        input {
+            width: 150px;
+            color: black !important;
+        }
+        input[type="checkbox"]{
+            height: 20px;
+            width: 50px;
+        }
+        h2 {
+            color: wheat !important;
+        }
+        ul {
+            display: block;
+            list-style: none;
+        }
+        li {
+            font-size: small;
+            border: 1px solid wheat;
+        }
+        li::before {
+            content: ">>";
+            color: wheat;
+        }
+        a {
+            color: black;
+        }
+
+        #modal {
+            background-color: dimgrey;
+            z-index: 1;
+            width: calc(100vw - 10px);
+            position: absolute;
+            top: 0;
+            left: 2.5px;
+            display: grid;
+            grid-template-columns: 50vw calc(50vw - 10px);
+            grid-template-rows: 60px 120px;
+            align-items: center;
+            justify-items: center;
+        }
+        #modal > * {
+            position: relative;
+            overflow: auto;
+        }
+        #modal_header {
+            grid-row: 1/2;
+            grid-column: 1/3;
+            font-size: 14px;
+            color: wheat;
+        }
+        #modal_list {
+            grid-row: 2/3;
+            grid-column: 1/2;
+            height: 100px;
+        }
+        #modal_options {
+            grid-row: 2/3;
+            grid-column: 2/3;
+            height: 100px;
+        }
+        #modal_options button {
+            width: 45vw;
+            font-size: 12px;
+            margin-bottom: 3px;
+        }
+
+        @media screen and (min-width: 800px) {
+            .header_slot, .table_slot {
+                max-width: calc((100vw - 32px)/6);
+                min-width: calc((100vw - 32px)/6);
+            }
+            #modal {
+                grid-template-columns: 1fr;
+                grid-template-rows: 40px 1fr 30px;
+            }
+            #modal_header {
+                grid-row: 1/2; 
+                grid-column: 1/2;
+            }
+            #modal_list {
+                display: flex;
+                grid-row: 2/3; 
+                grid-column: 1/2; 
+                flex-direction: row !important;
+            }
+            #modal_list li {
+                max-width: 45vw;
+            }
+            #modal_options {
+                display: flex;
+                grid-row: 3/4; 
+                grid-column: 1/2; 
+                flex-direction: row !important;
+            }
+            #modal_options button {
+                width: 250px;
+            }
+        }
+    </style>
+</head>
+<body class="flex column margin_children">
+    <h1 id="title">Componentes Curriculares</h1>
+    <div id="options" class="column margin_children">
+        <div id="filter" class="openable">
+            <div>
+                <h2 onclick="changeOpenable('filters', 'flex')">Filtros</h2>
+                <svg id="filters_icon" height="30" width="30" onclick="changeOpenable('filters', 'flex')">
+                    <circle cx="15" cy="15" r="5" stroke-width="5" stroke="white" fill="black" />
+                </svg>
+            </div>
+            <div id="filters" class="column" style="display: none;"></div>
+        </div>
+        <div id="hide" class="openable">
+            <div>
+                <h2 onclick="changeOpenable('hide_columns', 'flex')">Esconder Colunas</h2>
+                <svg id="hide_columns_icon" height="30" width="30" onclick="changeOpenable('hide_columns', 'flex')">
+                    <circle cx="15" cy="15" r="5" stroke-width="5" stroke="white" fill="black" />
+                </svg>
+            </div>
+            <div id="hide_columns" style="display: none;"></div>
+        </div>
+    </div>
+    <div id="table_container">
+        <div id="table" class="column">
+            <div id="table_header" class="table_line"></div>
+            <div id="table_content" class="column">
+                <div id="no_content">Não há componentes com esses requisitos.</div>
+            </div>
+        </div>
+    </div>
+    <div id="tips" class="openable">
+        <div>
+            <h2 onclick="changeOpenable('hints', 'block')">Dicas e Observações</h2>
+            <svg id="hints_icon" height="30" width="30" onclick="changeOpenable('hints', 'block')">
+                <circle cx="15" cy="15" r="5" stroke-width="5" stroke="white" fill="black" />
+            </svg>
+        </div>
+        <ul id="hints" style="display: none;">
+            <li>Não é obrigatório preencher todos os campos de filtro, e os que tiverem vazios serão pulados.</li>
+            <li>A próxima filtragem sempre será na lista original ordenada, portanto não há aninhamento de filtro por clique.</li>
+            <li>"Intersecionar Filtros" retorna os filtros aplicados de cima para baixo, enquanto "Unir Filtros" retorna as respostas de cada filtro unidas.</li>
+            <li>Para resetar toda a filtragem da tabela e sua ordenação, recarregue a página. Para resetar a filtragem da tabela mas mantendo a ordenação, deixe todos os inputs vazios e clique em "Intersecionar Filtros".</li>
+            <li>Campos vazios são preenchidos com "--" (por exemplo uma componente sem equivalências possui "--" na coluna de Equivalências), por isso utilize "--" para pesquisar por campos vazios (não deixe o input vazio, pois isso pula a filtragem).</li>
+            <li>Você pode separar frases por um dois-pontos (;) cada. O filtro será a união dos filtros de cada frase.</li>
+            <li>Coloque um til (~) no início de uma frase para filtrar textos que não a contêm.</li>
+            <li>Coloque um acento circunflexo (^) em vez de um dois-pontos (;) para filtrar por duas ou mais frases aninhadamente.</li>
+            <li>Antes que você pergunte, sim... (~),(;) e (^) equivalem respectivamente a "não","ou" e "e" lógicos.</li>
+            <li>Em quaisquer campos, para filtrar utilizando uma expressão regular (RegExp), coloque um sifrão ($) no início do input (não haverá separações de frases nesse caso).</li>
+            <li>Espaços ( ) fazem parte do texto, logo pesquisar por "A B" não é o mesmo que pesquisar por "A^B" ou por "A;B".</li>
+            <li>Para pesquisar uma frase exata (sem predecessor ou sucessor textual), coloque * no início da frase.</li>
+            <li>A ordenação é alfabética (mais precisamente, UTF-8) para todos os campos até para a carga horária (por isso há zeros à esquerda).</li>
+            <li>Triângulo para cima (verde) indica que a ordem é decrescente de baixo para cima, enquanto o triângulo para baixo (cinza) é decrescente de cima para baixo (Analogia: pirâmide de concentração).</li>
+            <li>Todas as optativas são consideradas como de 8º semestre. Porém, A.C., T.C.C. e equivalentes são consideradas de nenhum (?.) semestre.</li>
+            <li>Acentuações e tils foram adicionados, e abreviações foram expandidas. Ambas as ações são arbitrárias e portanto não são nomes oficiais.</li>
+            <li>Para as disciplinas equivalentes não são sabidas suas próprias Equivalências nem Pré-Requisitos, logo tais campos também serão preenchidos com "--".</li>
+            <li>Clique no campo de Pré-Requisitos ou Equivalências para ver os nomes dos códigos apresentados em um modal (para fechá-lo, clique no botão "Fechar").</li>
+            <li>Só haverá um modal aberto, mas você pode ir pra outro conteúdo sem ter que fechá-lo (mas o conteúdo antigo será fechado).</li>
+        </ul>
+    </div>
+    <div id="modal" class="column" style="display: none;">
+        <h3 id="modal_header"></h3>
+        <ul id="modal_list"></ul>
+        <div id="modal_options" class="column"></div>
+    </div>
+
+    <script>
+        function element(id) {
+            return document.getElementById(id);
+        }
+        const filters= element("filters");
+        const hide_columns= element("hide_columns");
+        const table= element("table");
+        const table_header= element("table_header");
+        const table_content= element("table_content");
+        const no_content= element("no_content").cloneNode(true);
+        const modal= {
+            box: element('modal'), header: element('modal_header'), list: element('modal_list'), options: element('modal_options')
+        };
+
+        function changeDisplay(id, display) {
+            let displaying= element(id);
+            let wasClosed= displaying.style.display==='none';
+            wasClosed ? displaying.style.display=display : displaying.style.display='none';
+            return wasClosed;
+        }
+        function changeOpenable(id, display) {
+            let wasClosed= changeDisplay(id, display);
+            let icon= element(id+"_icon");
+            icon.innerHTML= '';
+            icon.appendChild(wasClosed ? createSVG('text', {x: 9, y: 20}, {
+                    'font-style': 'normal',
+                    'font-weight': 'bold',
+                    'font-size': '18px',
+                    'line-height': 1.25,
+                    'font-family': 'sans-serif',
+                    'letter-spacing': '0px',
+                    'word-spacing': '0px',
+                    'fill':'black' ,
+                    'fill-opacity': 1,
+                    'stroke': 'white',
+                    'stroke-width': 0.5
+            }, {}, {innerHTML: 'X'}) 
+            : createSVG('circle', {cx: 15, cy: 15, r: 5, 'stroke-width': 5, stroke: "white", fill: "black"}))
+        }
+        function createChild(childTag='div', childAttrs={}, childText="", dataset={}) {
+            let child= document.createElement(childTag);
+            Object.keys(childAttrs).forEach(attr => child[attr]=childAttrs[attr]);
+            if (childText) child.innerText=childText;
+            Object.keys(dataset).forEach(data => child.dataset[data]=dataset[attr]);
+            return child;
+        }
+        function createSVG(type='svg', attributes={}, styles={}, dataset={}, general={}) {
+            let svg= document.createElementNS("http://www.w3.org/2000/svg", type);
+            Object.keys(attributes).forEach(attr => svg.setAttribute(attr, attributes[attr]));
+            Object.keys(styles).forEach(style => svg.style[style]=styles[style]);
+            Object.keys(dataset).forEach(data => svg.dataset[data]=dataset[data]);
+            Object.keys(general).forEach(info => svg[info]=general[info]);
+            return svg;
+        }
+
+        const attributes= {code: "Código", name: "Nome", period: "Período", pre: "Pré-Requisitos", eqs: "Equivalências", ch: "Carga Horária"}
+        const attrOrder= ['code', 'name', 'period', 'pre', 'eqs', 'ch'];
+        attrOrder.forEach(attr => {
+            let attrName= attributes[attr];
+
+            let filter= createChild('div', {id: attr+"_filter", className: 'single_filter'})
+            filter.appendChild(createChild('label', {htmlFor: attr}, attrName+": "))
+            filter.appendChild(createChild('input', {id: attr, type: 'text'}))
+            filters.appendChild(filter)
+
+            let hideZone= createChild('div', {className: "column"})
+            hideZone.appendChild(createChild('input', {id: attr+"_hide", type: 'checkbox', oninput: ({target}) => {
+                changeDisplay(attr+"_header", 'flex');
+                [...document.getElementsByClassName(attr+"_slot")].forEach(slot => changeDisplay(slot.id, 'flex'))
+            }}))
+            hideZone.appendChild(createChild('label', {htmlFor: attr+"_hide", className: 'hide_name'}, attrName))
+            hide_columns.appendChild(hideZone)
+
+            let header_slot= createChild('div', {id: attr+"_header", className: "header_slot"})
+            header_slot.appendChild(createChild('p', {className: 'header_text'}, attrName))
+            let svg= createSVG('svg', {height: '20', width: '20'}, {},{},{onclick: () => changeSVG(attr+"_order")})
+            svg.appendChild(createSVG('polygon', {id: attr+"_order", points: "0,10 10,20 20,10"}, {fill: 'grey'}, {order: 'down'}))
+            header_slot.appendChild(svg)
+            table_header.appendChild(header_slot)
+        })
+        let buttons= createChild('div', {id: 'buttons', className: 'single_filter'})
+        buttons.appendChild(createChild('button', {id: 'intersect_button', onclick: () => filterList(false)}, 'Intersecionar Filtros'))
+        buttons.appendChild(createChild('button', {id: 'unite_button', onclick: () => filterList(true)}, 'Unir Filtros'))
+        filters.appendChild(buttons)
+
+        function changeSVG(id) {
+            let polygon= element(id);
+            let newOrder= polygon.dataset.order==='down' ? 'up' : 'down';
+            let isUp= newOrder==='up';
+            polygon.dataset.order= newOrder;
+            polygon.style.fill= isUp ? 'green' : 'grey'
+            polygon.setAttributeNS(null, 'points', polygon.getAttributeNS(null,'points').replace(isUp?",20":",0", isUp?",0":",20"));
+            changeOrder(id.replace("_order", ""), isUp);
+        }
+        function openModal(component, attr) {
+            const {box, header, list, options} = modal;
+            let close= function() {
+                header.innerHTML= list.innerHTML= options.innerHTML= '';
+                box.style.display= 'none';
+            }
+            if (box.style.display!=='none') close();
+            if (component[attr]==='--') return;
+
+            box.style.display= 'grid';
+            header.innerHTML= attributes[attr]+" do componente "+component.code+" ("+component.name+"):"
+            component[attr].split(' ').forEach(code => {
+                let code_s_name= componentes[code]? componentes[code].name : "Componente não encontrada!";
+                list.appendChild(createChild('li', {}, code+" -- "+code_s_name))
+            })
+            let filter= (text) => () => {
+                element(attr).value= text;
+                attrOrder.forEach(otherAttr => {if (otherAttr!==attr) element(otherAttr).value=''})
+                element('unite_button').click();
+                close()
+            }
+            options.appendChild(createChild('button', {onclick: close}, 'Fechar'))
+            options.appendChild(createChild('button', {onclick: filter("*"+component[attr])}, attributes[attr]+' igual(is) a esse(s)'))
+            options.appendChild(createChild('button', {onclick: filter(component[attr].replace(" ",";"))}, attributes[attr]+' parecido(a)(s) com esse(a)(s)'))
+        }
+
+        const componentes= {
+            CB0534: {name: "CÁLCULO DIFERENCIAL E INTEGRAL I", period: "1. semestre", pre: "--", eqs: "--", ch:"096hr / 06cr"},
+            CB0661: {name: "MATEMÁTICA DISCRETA", period: "1. semestre", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0169: {name: "CIRCUITOS DIGITAIS", period: "1. semestre", pre: "--", eqs: "CK0106 CK0009", ch: "096hr / 06cr"},
+            CK0211: {name: "FUNDAMENTOS DE PROGRAMAÇÃO", period: "1. semestre", pre: "--", eqs: "CK0108 CK0087 CK0030", ch: "064hr / 04cr"},
+            CK0253: {name: "SEMINÁRIOS EM COMPUTAÇÃO", period: "1. semestre", pre: "--", eqs: "--", ch: "032hr / 02cr"},
+            CB0535: {name: "CÁLCULO DIFERENCIAL E INTEGRAL II", period: "2. semestre", pre: "CB0534", eqs: "--", ch: "096hr / 06cr"},
+            CB0589: {name: "ÁLGEBRA LINEAR", period: "2. semestre", pre: "--", eqs: "CB0537 CB0582", ch: "064hr / 04cr"},
+            CK0170: {name: "TRANSMISSÃO DE DADOS", period: "2. semestre", pre: "--", eqs: "CK0106 CK0009", ch: "064hr / 04cr"},
+            CK0209: {name: "ESTRUTURAS DE DADOS", period: "2. semestre", pre: "CB0661 CK0211", eqs: "CK0109 CK0029", ch: "064hr / 04cr"},
+            CK0226: {name: "PROGRAMAÇÃO", period: "2. semestre", pre: "CK0211", eqs: "CK0110", ch: "064hr / 04cr"},
+            CC0261: {name: "INTRODUÇÃO À PROBABILIDADE E À ESTATÍSTICA", period: "3. semestre", pre: "CB0534", eqs: "CC0051 AB0076", ch: "064hr / 04cr"},
+            CK0111: {name: "ALGORITMOS EM GRAFOS", period: "3. semestre", pre: "CK0209", eqs: "--", ch: "064hr / 04cr"},
+            CK0195: {name: "ARQUITETURA DE COMPUTADORES", period: "3. semestre", pre: "CK0169", eqs: "CK0113", ch: "064hr / 04cr"},
+            CK0220: {name: "LÓGICA PARA CIÊNCIA DA COMPUTAÇÃO", period: "3. semestre", pre: "CB0661", eqs: "CB0515", ch: "096hr / 06cr"},
+            CK0235: {name: "TÉCNICAS DE PROGRAMAÇÃO I", period: "3. semestre", pre: "CK0209 CK0226", eqs: "CK0112", ch: "064hr / 04cr"},
+            CK0047: {name: "MÉTODOS NUMÉRICOS I", period: "4. semestre", pre: "CK0226 CB0534", eqs: "--", ch: "064hr / 04cr"},
+            CK0114: {name: "FUNDAMENTOS DE BANCOS DE DADOS", period: "4. semestre", pre: "CK0211", eqs: "CK0105", ch: "096hr / 06cr"},
+            CK0115: {name: "LINGUAGENS DE PROGRAMAÇÃO I", period: "4. semestre", pre: "CK0211", eqs: "CK0043", ch: "096hr / 06cr"},
+            CK0203: {name: "CONSTRUÇÃO E ANÁLISE DE ALGORITMOS", period: "4. semestre", pre: "CK0111", eqs: "CK0019 CK0183", ch: "064hr / 04cr"},
+            CK0245: {name: "COMPUTAÇÃO GRÁFICA", period: "4. semestre", pre: "CB0589 CK0226", eqs: "CK0090", ch: "064hr / 04cr"},
+            CK0048: {name: "MÉTODOS NUMÉRICOS II", period: "5. semestre", pre: "CK0047 CB0535 CB0589", eqs: "--", ch: "064hr / 04cr"},
+            CK0117: {name: "SISTEMAS DE GERENCIAMENTO DE BANCOS DE DADOS", period: "5. semestre", pre: "CK0114", eqs: "--", ch: "096hr / 06cr"},
+            CK0247: {name: "ENGENHARIA DE SOFTWARE I", period: "5. semestre", pre: "CK0226", eqs: "CK0119", ch: "064hr / 04cr"},
+            CK0249: {name: "REDES DE COMPUTADORES I", period: "5. semestre", pre: "CK0170", eqs: "CK0184 CK0061 SMD0037", ch: "064hr / 04cr"},
+            CK0118: {name: "AUTÔMATOS E LINGUAGENS FORMAIS", period: "6. semestre", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0192: {name: "ANÁLISE E PROJETO DE SISTEMAS I", period: "6. semestre", pre: "CK0235", eqs: "CK0116 SMD0030", ch: "064hr / 04cr"},
+            CK0234: {name: "SISTEMAS OPERACIONAIS", period: "6. semestre", pre: "CK0195", eqs: "CK0069", ch: "096hr / 06cr"},
+            CK0248: {name: "INTELIGÊNCIA ARTIFICIAL", period: "6. semestre", pre: "CK0209 CC0261", eqs: "CK0031", ch: "064hr / 04cr"},
+            CK0101: {name: "TEORIA DA COMPUTAÇÃO", period: "7. semestre", pre: "CK0118", eqs: "--", ch: "096hr / 06cr"},
+            CK0202: {name: "CONSTRUÇÃO DE COMPILADORES", period: "7. semestre", pre: "CK0118", eqs: "--", ch: "096hr / 06cr"},
+            CK0212: {name: "INFORMÁTICA E SOCIEDADE", period: "7. semestre", pre: "--", eqs: "CK0120", ch: "032hr / 02cr"},
+            CB0507: {name: "ESTRUTURAS ALGÉBRICAS", period: "8. semestre / OPTATIVA", pre: "CB0661", eqs: "--", ch: "096hr / 06cr"},
+            CB0519: {name: "INTRODUÇÃO ÀS EQUAÇÕES DIFERENCIAIS ORDINÁRIAS", period: "8. semestre / OPTATIVA", pre: "CK0048", eqs: "--", ch: "096hr / 06cr"},
+            CB0536: {name: "CÁLCULO DIFERENCIAL E INTEGRAL III", period: "8. semestre / OPTATIVA", pre: "CB0535", eqs: "--", ch: "096hr / 06cr"},
+            CB0802: {name: "TEORIA DOS NÚMEROS", period: "8. semestre / OPTATIVA", pre: "CB0661", eqs: "CB0676 CB0508", ch: "096hr / 06cr"},
+            CC0263: {name: "PROGRAMAÇÃO LINEAR", period: "8. semestre / OPTATIVA", pre: "CB0589", eqs: "--", ch: "064hr / 04cr"},
+            CC0297: {name: "INTRODUÇÃO AOS PROCESSOS ESTOCÁSTICOS", period: "8. semestre / OPTATIVA", pre: "CC0261", eqs: "--", ch: "096hr / 06cr"},
+            CC0321: {name: "OTIMIZAÇÃO COMBINATÓRIA E METAHEURÍSTICA", period: "8. semestre / OPTATIVA", pre: "CC0263", eqs: "--", ch: "096hr / 06cr"},
+            CC0323: {name: "PROGRAMAÇÃO NÃO-LINEAR", period: "8. semestre / OPTATIVA", pre: "CB0535 CB0589", eqs: "--", ch: "064hr / 04cr"},
+            CC0325: {name: "ÁLGEBRA LINEAR COMPUTACIONAL", period: "8. semestre / OPTATIVA", pre: "CB0589 CK0047", eqs: "--", ch: "064hr / 04cr"},
+            CC0328: {name: "LABORATÓRIO DE OTIMIZAÇÃO", period: "8. semestre / OPTATIVA", pre: "CK0203 CC0399", eqs: "--", ch: "064hr / 04cr"},
+            CC0335: {name: "PROGRAMAÇÃO POR RESTRIÇÕES", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "--", ch: "064hr / 04cr"},
+            CC0343: {name: "COMBINATÓRIA POLIÉDRICA", period: "8. semestre / OPTATIVA", pre: "CC0263", eqs: "--", ch: "064hr / 04cr"},
+            CC0399: {name: "PROGRAMAÇÃO INTEIRA", period: "8. semestre / OPTATIVA", pre: "CC0263", eqs: "--", ch: "064hr / 04cr"},
+            CD0201: {name: "FÍSICA GERAL I", period: "8. semestre / OPTATIVA", pre: "CB0534", eqs: "--", ch: "096hr / 06cr"},
+            CD0202: {name: "FÍSICA GERAL II", period: "8. semestre / OPTATIVA", pre: "CD0201", eqs: "--", ch: "096hr / 06cr"},
+            CK0102: {name: "EMPREENDEDOR EM INFORMÁTICA", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0125: {name: "TEORIA DOS GRAFOS", period: "8. semestre / OPTATIVA", pre: "CB0661", eqs: "--", ch: "064hr / 04cr"},
+            CK0126: {name: "ESTRUTURAS DE DADOS AVANÇADAS", period: "8. semestre / OPTATIVA", pre: "CK0209", eqs: "CK0051", ch: "064hr / 04cr"},
+            CK0132: {name: "ALGORITMOS APROXIMATIVOS", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "--", ch: "064hr / 04cr"},
+            CK0133: {name: "ALGORITMOS DISTRIBUÍDOS", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "--", ch: "064hr / 04cr"},
+            CK0134: {name: "ALGORITMOS PARALELOS", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "--", ch: "064hr / 04cr"},
+            CK0139: {name: "BANCOS DE DADOS NÃO CONVENCIONAIS", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0148: {name: "COMPUTAÇÃO DE ALTO DESEMPENHO", period: "8. semestre / OPTATIVA", pre: "CK0203 CK0234", eqs: "--", ch: "064hr / 04cr"},
+            CK0152: {name: "MODELAGEM ANALÍTICA E AVALIAÇÃO DE DESEMPENHO DE SISTEMAS DE COMPUTADORES", period: "8. semestre / OPTATIVA", pre: "CC0261 CK0249", eqs: "--", ch: "064hr / 04cr"},
+            CK0154: {name: "SISTEMAS DISTRIBUÍDOS", period: "8. semestre / OPTATIVA", pre: "CK0234 CK0249", eqs: "TI0151", ch: "064hr / 04cr"},
+            CK0167: {name: "PROCESSAMENTO DE IMAGENS", period: "8. semestre / OPTATIVA", pre: "CK0235", eqs: "--", ch: "064hr / 04cr"},
+            CK0171: {name: "ANIMAÇÃO POR COMPUTADOR", period: "8. semestre / OPTATIVA", pre: "CK0245", eqs: "--", ch: "064hr / 04cr"},
+            CK0172: {name: "MODELAGEM EM COMPUTAÇÃO GRÁFICA I", period: "8. semestre / OPTATIVA", pre: "CK0245", eqs: "--", ch: "064hr / 04cr"},
+            CK0173: {name: "MODELAGEM EM COMPUTAÇÃO GRÁFICA II", period: "8. semestre / OPTATIVA", pre: "CK0245", eqs: "--", ch: "064hr / 04cr"},
+            CK0190: {name: "ADMINISTRAÇÃO DE BANCOS DE DADOS", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0191: {name: "ALGORITMOS PROBABILÍSTICOS", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "--", ch: "064hr / 04cr"},
+            CK0193: {name: "APRENDIZAGEM DE MÁQUINA", period: "8. semestre / OPTATIVA", pre: "CB0589 CK0226", eqs: "CK0138", ch: "064hr / 04cr"},
+            CK0194: {name: "ARMAZÉNS DE DADOS", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0196: {name: "BANCOS DE DADOS DISTRIBUÍDOS", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0197: {name: "BUSCA E RECUPERAÇÃO DA INFORMAÇÃO", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0198: {name: "COMPLEXIDADE COMPUTACIONAL", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "--", ch: "064hr / 04cr"},
+            CK0199: {name: "COMPLEXIDADE DESCRITIVA I", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0200: {name: "COMPLEXIDADE DESCRITIVA II", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0201: {name: "WEB SEMÂNTICA", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0204: {name: "DECOMPOSIÇÃO EM GRAFOS", period: "8. semestre / OPTATIVA", pre: "CK0111", eqs: "--", ch: "064hr / 04cr"},
+            CK0205: {name: "DESENVOLVIMENTO DE SOFTWARE PARA NUVEM", period: "8. semestre / OPTATIVA", pre: "CK0235", eqs: "CK0107", ch: "064hr / 04cr"},
+            CK0206: {name: "DESENVOLVIMENTO DE SOFTWARE PARA PLATAFORMAS MÓVEIS", period: "8. semestre / OPTATIVA", pre: "CK0235 CK0195", eqs: "CK0147 SMD0122", ch: "064hr / 04cr"},
+            CK0207: {name: "DESENVOLVIMENTO DE SOFTWARE PARA WEB", period: "8. semestre / OPTATIVA", pre: "CK0235", eqs: "--", ch: "064hr / 04cr"},
+            CK0208: {name: "ENGENHARIA DE SOFTWARE II", period: "8. semestre / OPTATIVA", pre: "CK0247", eqs: "--", ch: "064hr / 04cr"},
+            CK0210: {name: "FILOSOFIA DA MENTE", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0213: {name: "INTELIGÊNCIA ARTIFICIAL ENATIVA", period: "8. semestre / OPTATIVA", pre: "CK0248", eqs: "--", ch: "064hr / 04cr"},
+            CK0215: {name: "LABORATÓRIO DE PROGRAMAÇÃO", period: "8. semestre / OPTATIVA", pre: "CK0226", eqs: "CK0038", ch: "064hr / 04cr"},
+            CK0216: {name: "LINGUAGENS DE PROGRAMAÇÃO II", period: "8. semestre / OPTATIVA", pre: "CK0115", eqs: "CK0044", ch: "064hr / 04cr"},
+            CK0217: {name: "LÓGICA FUZZY", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0218: {name: "LÓGICA MODAL I", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0219: {name: "LÓGICA MODAL II", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0221: {name: "MANUTENÇÃO E EVOLUÇÃO DE SOFTWARE", period: "8. semestre / OPTATIVA", pre: "CK0235 CK0247", eqs: "--", ch: "064hr / 04cr"},
+            CK0222: {name: "METATEOREMAS DA LÓGICA MATEMÁTICA", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0223: {name: "MINERAÇÃO DE DADOS", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "CK0149", ch: "064hr / 04cr"},
+            CK0224: {name: "PADRÕES DE PROJETO DE SOFTWARE", period: "8. semestre / OPTATIVA", pre: "CK0235 CK0247", eqs: "--", ch: "064hr / 04cr"},
+            CK0225: {name: "PROCESSAMENTO DE DADOS EM LARGA ESCALA", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0227: {name: "PROGRAMAÇÃO CONCORRENTE", period: "8. semestre / OPTATIVA", pre: "CK0235 CK0115", eqs: "--", ch: "064hr / 04cr"},
+            CK0228: {name: "PROGRAMAÇÃO EM BANCOS DE DADOS", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0229: {name: "PROJETO SOCIAL", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0230: {name: "PROVA ASSISTIDA POR COMPUTADOR", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0231: {name: "QUALIDADE DE SOFTWARE", period: "8. semestre / OPTATIVA", pre: "CK0247", eqs: "--", ch: "064hr / 04cr"},
+            CK0232: {name: "REDES COMPLEXAS EM COMPUTAÇÃO", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "--", ch: "064hr / 04cr"},
+            CK0233: {name: "REDES MÓVEIS E SEM FIO", period: "8. semestre / OPTATIVA", pre: "CK0249", eqs: "--", ch: "064hr / 04cr"},
+            CK0236: {name: "TÉCNICAS DE PROGRAMAÇÃO II", period: "8. semestre / OPTATIVA", pre: "CK0235", eqs: "CK0129", ch: "064hr / 04cr"},
+            CK0237: {name: "TEORIA DE MATROIDES", period: "8. semestre / OPTATIVA", pre: "CB0661", eqs: "--", ch: "064hr / 04cr"},
+            CK0238: {name: "TEORIA DE MODELOS FINITOS I", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0239: {name: "TEORIA DE MODELOS FINITOS II", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0240: {name: "VERIFICAÇÃO DEDUTIVA DE PROGRAMAS", period: "8. semestre / OPTATIVA", pre: "CK0209 CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0241: {name: "VERIFICAÇÃO, VALIDAÇÃO E TESTE DE SOFTWARE", period: "8. semestre / OPTATIVA", pre: "CK0235 CK0247", eqs: "--", ch: "064hr / 04cr"},
+            CK0243: {name: "ABSTRAÇÕES DE SOFTWARE", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "--", ch: "064hr / 04cr"},
+            CK0244: {name: "ANÁLISE E PROJETO DE SISTEMAS II", period: "8. semestre / OPTATIVA", pre: "CK0192", eqs: "CK0165", ch: "064hr / 04cr"},
+            CK0246: {name: "COMPUTAÇÃO GRÁFICA II", period: "8. semestre / OPTATIVA", pre: "CK0245", eqs: "CK0091", ch: "064hr / 04cr"},
+            CK0250: {name: "REDES DE COMPUTADORES II", period: "8. semestre / OPTATIVA", pre: "CK0249", eqs: "--", ch: "064hr / 04cr"},
+            CK0251: {name: "REDES NEURAIS", period: "8. semestre / OPTATIVA", pre: "CB0589 CK0226", eqs: "CK0192", ch: "064hr / 04cr"},
+            CK0252: {name: "SEGURANÇA EM REDES", period: "8. semestre / OPTATIVA", pre: "CK0249", eqs: "--", ch: "064hr / 04cr"},
+            CK0254: {name: "TÓPICOS AVANÇADOS EM ALGORITMOS", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "CK0137", ch: "064hr / 04cr"},
+            CK0255: {name: "TÓPICOS AVANÇADOS EM APRENDIZAGEM DE MÁQUINA", period: "8. semestre / OPTATIVA", pre: "CK0193", eqs: "--", ch: "064hr / 04cr"},
+            CK0256: {name: "TÓPICOS AVANÇADOS EM BANCOS DE DADOS", period: "8. semestre / OPTATIVA", pre: "CK0114", eqs: "CK0144", ch: "064hr / 04cr"},
+            CK0257: {name: "TÓPICOS AVANÇADOS EM COMBINATÓRIA", period: "8. semestre / OPTATIVA", pre: "CK0203", eqs: "CK0145", ch: "064hr / 04cr"},
+            CK0258: {name: "TÓPICOS AVANÇADOS EM COMPLEXIDADE", period: "8. semestre / OPTATIVA", pre: "CK0220 CK0203", eqs: "--", ch: "064hr / 04cr"},
+            CK0259: {name: "TÓPICOS AVANÇADOS EM COMPUTAÇÃO GRÁFICA", period: "8. semestre / OPTATIVA", pre: "CK0245", eqs: "CK0155", ch: "064hr / 04cr"},
+            CK0260: {name: "TÓPICOS AVANÇADOS EM ENGENHARIA DE SOFTWARE", period: "8. semestre / OPTATIVA", pre: "CK0247", eqs: "--", ch: "064hr / 04cr"},
+            CK0261: {name: "TÓPICOS AVANÇADOS EM INTELIGÊNCIA ARTIFICIAL", period: "8. semestre / OPTATIVA", pre: "CK0248", eqs: "CK0146 CK0156", ch: "064hr / 04cr"},
+            CK0262: {name: "TÓPICOS AVANÇADOS EM LÓGICA MATEMÁTICA", period: "8. semestre / OPTATIVA", pre: "CK0220", eqs: "CK0131", ch: "064hr / 04cr"},
+            CK0263: {name: "TÓPICOS AVANÇADOS EM REDES E SISTEMAS DISTRIBUÍDOS", period: "8. semestre / OPTATIVA", pre: "CK0250", eqs: "CK0158 CK0163", ch: "064hr / 04cr"},
+            CK0264: {name: "INTRODUÇÃO À COMPUTAÇÃO MÓVEL E UBÍQUA", period: "8. semestre / OPTATIVA", pre: "CK0206", eqs: "--", ch: "064hr / 04cr"},
+            CK0265: {name: "TRABALHO DE CONCLUSÃO DE CURSO", period: "?. semestre / T.C.C.", pre: "--", eqs: "CK0159", ch: "096hr / 06cr"},
+            CK0266: {name: "VISUALIZAÇÃO DE DADOS", period: "8. semestre / OPTATIVA", pre: "CK0235", eqs: "CK0242", ch: "064hr / 03cr"},
+            CK0267: {name: "VISÃO COMPUTACIONAL", period: "8. semestre / OPTATIVA", pre: "CK0167", eqs: "RUS0120", ch: "064hr / 04cr"},
+            CK0268: {name: "INTRODUÇÃO À CIÊNCIA DE DADOS", period: "8. semestre / OPTATIVA", pre: "CK0226", eqs: "--", ch: "064hr / 03cr"},
+            ED0049: {name: "ADMINISTRAÇÃO DE EMPRESAS", period: "8. semestre / OPTATIVA", pre: "--", eqs: "ED0056", ch: "096hr / 06cr"},
+            EH0316: {name: "CONTABILIDADE GERAL", period: "8. semestre / OPTATIVA", pre: "--", eqs: "EH0306", ch: "064hr / 04cr"},
+            HLL0077: {name: "LÍNGUA BRASILEIRA DE SINAIS", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            PRG0002: {name: "RELAÇÕES ÉTNICO-RACIAIS E AFRICANIDADES", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            PRG0003: {name: "EDUCAÇÃO AMBIENTAL", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            PRG0004: {name: "EDUCAÇÃO EM DIREITOS HUMANOS", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            PRG0005: {name: "DIFERENÇA E ENFRENTAMENTO PROFISSIONAL NAS DESIGUALDADES SOCIAIS", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            SMD0025: {name: "ÉTICA E POLÍTICA AUTORAL", period: "8. semestre / OPTATIVA", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            SMD0035: {name: "MATEMÁTICA E FÍSICA PARA JOGOS", period: "8. semestre / OPTATIVA", pre: "CK0235", eqs: "--", ch: "064hr / 04cr"},
+            SMD0045: {name: "LINGUAGEM DE PROGRAMAÇÃO SCRIPT", period: "8. semestre / OPTATIVA", pre: "CK0235", eqs: "--", ch: "064hr / 04cr"},
+            SMD0108: {name: "INTERAÇÃO HUMANO-COMPUTADOR I", period: "8. semestre / OPTATIVA", pre: "--", eqs: "CK0151", ch: "064hr / 04cr"},
+            CIC0001: {name: "ATIVIDADES COMPLEMENTARES", period: "?. semestre / A.C.", pre: "--", eqs: "--", ch: "192hr / 102cr"},
+            CK0106: {name: "CIRCUITOS DIGITAIS E TRANSMISSÃO DE DADOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0009: {name: "ARQUITETURA DE COMPUTADORES", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0108: {name: "FUNDAMENTOS DE PROGRAMAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0087: {name: "FUNDAMENTOS DE PROGRAMAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0030: {name: "FUNDAMENTOS DE PROGRAMAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "080hr / 04cr"},
+            CB0537: {name: "ÁLGEBRA LINEAR I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "048hr / 03cr"},
+            CB0582: {name: "ÁLGEBRA LINEAR E GEOMETRIA ANALÍTICA", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0109: {name: "ESTRUTURAS DE DADOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0029: {name: "ESTRUTURAS DE INFORMAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0110: {name: "PROGRAMAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "032hr / 02cr"},
+            CC0051: {name: "INTRODUÇÃO À ESTATÍSTICA", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            AB0076: {name: "ESTATÍSTICA BÁSICA", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0113: {name: "ARQUITETURA DE COMPUTADORES I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CB0515: {name: "INTRODUÇÃO À LÓGICA MATEMÁTICA", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0112: {name: "TÉCNICAS DE PROGRAMAÇÃO I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0105: {name: "BANCOS DE DADOS I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0043: {name: "LINGUAGENS DE PROGRAMAÇÃO I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0019: {name: "CONSTRUÇÃO E ANÁLISE DE ALGORITMOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0183: {name: "CONSTRUÇÃO E ANÁLISE DE ALGORITMOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0090: {name: "COMPUTAÇÃO GRÁFICA I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0119: {name: "ENGENHARIA DE SOFTWARE", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0184: {name: "REDES DE COMPUTADORES I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0061: {name: "REDES DE COMPUTADORES", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            SMD0037: {name: "REDES DE COMPUTADORES", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0116: {name: "ANÁLISE E PROJETO DE SISTEMAS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            SMD0030: {name: "ANÁLISE E PROJETO DE SISTEMAS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0069: {name: "SISTEMAS OPERACIONAIS I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0031: {name: "INTELIGÊNCIA ARTIFICIAL", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0017: {name: "CONSTRUÇÃO DE COMPILADORES I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0120: {name: "INFORMÁTICA E SOCIEDADE", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CB0676: {name: "INTRODUÇÃO À TEORIA DOS NÚMEROS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CB0508: {name: "INTRODUÇÃO À TEORIA DOS NÚMEROS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0051: {name: "ORGANIZAÇÃO DE ARQUIVOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            TI0151: {name: "SISTEMAS DISTRIBUÍDOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0138: {name: "APRENDIZAGEM AUTOMÁTICA", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0107: {name: "SISTEMAS DE INFORMAÇÃO DISTRIBUÍDOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0147: {name: "TÓPICOS AVANÇADOS EM SISTEMAS DE INFORMAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            SMD0122: {name: "PROGRAMAÇÃO PARA DISPOSITIVOS MÓVEIS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0038: {name: "LABORATÓRIO DE PROGRAMAÇÃO II", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "048hr / 03cr"},
+            CK0044: {name: "LINGUAGENS DE PROGRAMAÇÃO II", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0149: {name: "GARIMPAGEM DE DADOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0129: {name: "TÉCNICAS DE PROGRAMAÇÃO II", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0165: {name: "ANÁLISE E PROJETO DE SISTEMAS ORIENTADOS A OBJETOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0091: {name: "COMPUTAÇÃO GRÁFICA II", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0142: {name: "REDES NEURAIS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0137: {name: "TÓPICOS AVANÇADOS EM GRAFOS E ALGORITMOS I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0144: {name: "TÓPICOS AVANÇADOS EM BANCOS DE DADOS I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0145: {name: "TÓPICOS AVANÇADOS EM GRAFOS E ALGORITMOS II", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0155: {name: "TÓPICOS AVANÇADOS EM COMPUTAÇÃO GRÁFICA I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0146: {name: "TÓPICOS AVANÇADOS EM INTELIGÊNCIA ARTIFICIAL I", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0156: {name: "TÓPICOS AVANÇADOS EM INTELIGÊNCIA ARTIFICIAL II", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0131: {name: "TÓPICOS ESPECIAIS EM LÓGICA MATEMÁTICA", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0158: {name: "TÓPICOS AVANÇADOS EM REDES DE COMPUTADORES", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0163: {name: "TÓPICOS AVANÇADOS EM SISTEMAS DISTRIBUÍDOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0159: {name: "TRABALHO FINAL DE DESENVOLVIMENTO DE SISTEMAS DE INFORMAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            CK0242: {name: "VISUALIZAÇÃO DE DADOS", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            RUS0120: {name: "VISÃO COMPUTACIONAL", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            ED0056: {name: "INTRODUÇÃO À ADMINSTRAÇÃO", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "096hr / 06cr"},
+            EH0306: {name: "CONTABILIDADE GERAL", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"},
+            CK0151: {name: "INTERFACE HOMEM-MÁQUINA", period: "?. semestre / EQUIVALENTE", pre: "--", eqs: "--", ch: "064hr / 04cr"}
+        }
+
+        let lista= Object.keys(componentes).map(code => ({code: code, ...componentes[code]}));
+        function atualizarLista(nova_lista) {
+            lista= nova_lista;
+            if (lista.length) lista.forEach((component) => {
+                let row= createChild('div', {className: 'table_line'})
+                attrOrder.forEach(attr => row.appendChild(createChild('p', 
+                    {id: attr+"_"+component.code, className: 'table_slot '+attr+"_slot", onclick: 
+                        attr==='pre' || attr==='eqs' ? () => openModal(component, attr) : () => {}
+                    }
+                , component[attr])))
+                table_content.appendChild(row);
+            })
+            else table_content.appendChild(no_content);
+        }
+        let original= lista.slice();
+
+        function merge_sort(array=[], comparator) {
+            if (array.length<=1) return array;
+            let sep= Math.floor(array.length/2)
+            return merge(merge_sort(array.slice(0,sep), comparator), merge_sort(array.slice(sep), comparator), comparator)
+        }
+        function merge(arrL=[], arrR=[], comparator) {
+            let sorted=[];
+            while(arrL.length&&arrR.length) {
+                if (comparator(arrL[0],arrR[0])) sorted.push(arrL.shift())
+                else sorted.push(arrR.shift())
+            }
+            return sorted.concat(arrL.slice().concat(arrR.slice()))
+        }
+        function changeOrder(attr, upToDown) {
+            table_content.innerHTML='';
+            let ordernador= upToDown? (a,b)=>a[attr]<b[attr] : (a,b)=>a[attr]>b[attr]
+            atualizarLista(merge_sort(lista, ordernador))
+            original= merge_sort(original, ordernador)
+        }
+
+        function union(setA=new Set(), setB= new Set()) {
+            let result= new Set()
+            setA.forEach(i => result.add(i))
+            setB.forEach(i => result.add(i))
+            return result;
+        }
+        function intersection(setA=new Set(), setB= new Set()) {
+            let result= new Set()
+            setA.forEach(i => {if (setB.has(i)) result.add(i)})
+            return result;
+        }
+        function filterList(isUnion) {
+            table_content.innerHTML='';
+            const total= original.map((_,i) => i);
+            let filtered_list= isUnion ? new Set() : new Set(total);
+            attrOrder.forEach(attr => {
+                let filter_text= element(attr).value;
+                if (filter_text==="") return;
+                let result= new Set();
+                if (filter_text[0]==='$') {
+                    try {
+                        let regex= new RegExp(filter_text.slice(1))
+                        total.forEach(i => {
+                            if (regex.test(original[i][attr])) result.add(i);
+                        })
+                    } catch (regexpError) {
+                        alert("Expressão regular /"+filter_text.slice(1)+"/ é inválida! Tente outra expressão.")
+                    }
+                } else {
+                    let phrases_or= filter_text.split(";")
+                    phrases_or.forEach(phrase_or => {
+                        let or_result= new Set(total);
+                        let phrases_and= phrase_or.split('^');
+                        phrases_and.forEach(phrase_and => {
+                            let and_result= new Set();
+                            let start_symbol= phrase_and[0];
+                            let phrase= phrase_and;
+                            let exact=false, negate=false;
+                            let added_and= new Set(), removed_and= new Set();
+                            while (start_symbol==='*' || start_symbol==='~') {
+                                if (start_symbol==='*') exact=true
+                                else negate=!(negate);
+                                phrase= phrase.slice(1);
+                                start_symbol= phrase[0];
+                            }
+                            or_result.forEach(i => {
+                                let info= original[i][attr];
+                                let matches= exact? info===phrase : info.toLocaleLowerCase().search(phrase.toLocaleLowerCase())>=0
+                                if (negate) matches= !matches;
+                                if (matches) and_result.add(i);
+                            })
+                            or_result= intersection(and_result, or_result);
+                        })
+                        result= union(result, or_result)
+                    })
+                }
+                filtered_list= isUnion ? union(filtered_list, result) : intersection(filtered_list, result);
+            })
+            atualizarLista(original.filter((c,i) => filtered_list.has(i))) 
+        }
+        changeSVG('period_order');
+    </script>
+</body>
+</html>
