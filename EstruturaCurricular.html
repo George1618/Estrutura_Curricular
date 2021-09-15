@@ -92,6 +92,7 @@
             width: calc(100% - 4px);
             border: 2px solid var(--cl);
             margin-bottom: 6px;
+            overflow-y: auto;
         }
         #table_header {
             position: sticky;
@@ -268,7 +269,6 @@
 
             #table {
                 width: 100%;
-                overflow-y: auto;
             }
             #table_header, #table_content {
                 width: 200vw;
@@ -296,12 +296,12 @@
         </div>
         <div id="table">
             <div id="table_header">
-                <div id="cod" onclick="order('cod')"><p>Código</p><button id="cod_b">⭥</button></div>
-                <div id="disc" onclick="order('disc')"><p>Nome</p><button id="disc_b">⭥</button></div>
-                <div id="peri" onclick="order('peri')"><p>Período</p><button id="peri_b">⭥</button></div>
-                <div id="pre" onclick="order('pre')"><p>Pré-Requisitos</p><button id="pre_b">⭥</button></div>
-                <div id="eqs" onclick="order('eqs')"><p>Equivalentes</p><button id="eqs_b">⭥</button></div>
-                <div id="ch" onclick="order('ch')"><p>Carga Horária</p><button id="ch_b">⭥</button></div>
+                <div id="cod" onclick="order('cod')"><p>Código</p><button id="cod_b">⇕</button></div>
+                <div id="disc" onclick="order('disc')"><p>Nome</p><button id="disc_b">⇕</button></div>
+                <div id="peri" onclick="order('peri')"><p>Período</p><button id="peri_b">⇕</button></div>
+                <div id="pre" onclick="order('pre')"><p>Pré-Requisitos</p><button id="pre_b">⇕</button></div>
+                <div id="eqs" onclick="order('eqs')"><p>Equivalentes</p><button id="eqs_b">⇕</button></div>
+                <div id="ch" onclick="order('ch')"><p>Carga Horária</p><button id="ch_b">⇕</button></div>
             </div>
             <div id="table_content"></div>
         </div>
@@ -412,7 +412,7 @@
                 <li>A tabela mostra componentes curriculares separados por 6 propriedades: código, nome, período, pré-requisitos, equivalentes e carga horária.</li>
                 <li>Cada componente curricular é mostrado em uma única linha.</li>
                 <li>Para ordernar as linhas por alguma propriedade, clique no nome da propriedade; isso mudará a ordem de acordo com cada símbolo a seguir:</li>
-                <li>🠋: de 0 a 9, A a Z; 🠉: de Z a A, 9 a 0; ⭥: sem ordenação.</li>
+                <li>↧: de 0 a 9, A a Z; ↥: de Z a A, 9 a 0; ⇕: sem ordenação.</li>
                 <li>A ordenação é cumulativa.</li>
                 <li>As propriedades "Pré-requisitos" e "Equivalentes" mostram apenas os códigos de suas disciplinas; porém, é possível passar o mouse por cima de um código, ou clicá-lo, para ver o nome da disciplina correspondente.</li>
             </ul>
@@ -523,9 +523,9 @@
         function order(id) {
             let button = element(id+'_b');
             switch (button.textContent) {
-                case '⭥': button.textContent='🠋'; change_order(id, true); break;
-                case '🠋': button.textContent='🠉'; change_order(id, false); break;
-                case '🠉': button.textContent='🠋'; change_order(id, true); break;
+                case '⇕': button.textContent='↧'; change_order(id, true); break;
+                case '↧': button.textContent='↥'; change_order(id, false); break;
+                case '↥': button.textContent='↧'; change_order(id, true); break;
                 default: break;
             }
         }
@@ -537,7 +537,7 @@
             else has_hr && row.classList.remove(hr);
         }
         function show_cols() {
-            let gtc = '', valid_w = true;
+            let gtc = '', valid_w = true, qnt = 0;
             attrOrder.forEach(attr => {
                 let hidden = !(element(attr+'_chk2').checked);
                 hide_el(element(attr), hidden);
@@ -546,9 +546,14 @@
                     let width = element(attr+'_w').value;
                     if (isNaN(width)) valid_w=false;
                     gtc+= (width+'fr ');
+                    qnt++;
                 }
             });
             if (valid_w) {
+                if (window.matchMedia('(max-width: 600px)').matches) {
+                    let total_width = Math.min(qnt*50, 200);
+                    table_header.style.width = table_content.style.width = `${total_width}vw`;
+                }
                 table_header.style.gridTemplateColumns = gtc;
                 lista.forEach(row => row.style.gridTemplateColumns = gtc);
             }
