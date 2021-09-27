@@ -175,6 +175,10 @@
             background: var(--bg);
             color: var(--cl);
         }
+        #options > #options_exit {
+            float: right;
+            background: inherit;
+        }
         .optb {
             display: none;
             height: calc(90% - 10px);
@@ -238,21 +242,21 @@
             list-style-position: inside;
         }
 
-        #description {
+        #description, #chng {
             height: 10vh;
             position: absolute;
             top: unset;
             bottom: 0;
         }
-        #description * {
+        #description *, #chng * {
             background: var(--cl);
             color: var(--bg);
         }
-        #description > div {
+        #description > div, #chng > div {
             height: 10vh;
             display: flex;
         }
-        #desc_exit {
+        #desc_exit, #chng > button {
             float: right;
             font-size: 1.2em;
         }
@@ -286,7 +290,7 @@
 <body>
     <div id="main">
         <div id="main_header">
-            <h1 id="title">Ciência da Computação</h1>
+            <h1 id="title" ondblclick="open_el('chng')">Ciência da Computação</h1>
             <div id="search_name">
                 <input type="text" id="input_name" placeholder="pesquisar por código ou nome...">
                 <button type="submit" id="srcb" onclick="search()">🔍</button>
@@ -310,6 +314,7 @@
         <div id="options">
             <button id="advs_b" onclick="show_opt('advs')" class="opt_on">Pesquisa Avançada</button>
             <button id="cfgc_b" onclick="show_opt('cfgc')">Configurar Colunas</button>
+            <button id="options_exit" onclick="close_el('opts')">X</button>
         </div>
         <div id="advs" class="optb opt_show">
             <form onsubmit="try{advanced_search()}catch(e){console.log(e)}; close_el('opts'); return false;">
@@ -398,12 +403,13 @@
         <details>
             <summary>Uso Geral</summary>
             <ul>
-                <li>O conteúdo principal é a tabela, que enumera disciplinas do curso mostrado no canto superior esquerdo</li>
-                <li>Acima da tabela, além deste botão de ajuda, há um campo de pesquisa e um botão de opções</li>
-                <li>O campo de pesquisa pode ser utilizado para buscar disciplinas cujo nome ou código corresponde ao que você digitar</li>
-                <li>Para efetuar a pesquisa, clique na lupa 🔍 ao lado do campo, ou aperte <kbd>Enter</kbd></li>
+                <li>O conteúdo principal é a tabela, que enumera disciplinas do curso mostrado no canto superior esquerdo.</li>
+                <li>Acima da tabela, além deste botão de ajuda, há o nome do curso-padrão, um campo de pesquisa e um botão de opções.</li>
+                <li>Para trocar de curso, dê um clique duplo no nome: isso abrirá um campo para escolha de cursos disponíveis.</li>
+                <li>O campo de pesquisa pode ser utilizado para buscar disciplinas cujo nome ou código corresponde ao que você digitar.</li>
+                <li>Para efetuar a pesquisa, clique na lupa 🔍 ao lado do campo, ou aperte <kbd>Enter</kbd>.</li>
                 <li>Para restaurar as linhas da tabela (desfazer pesquisa), pesquise com o campo limpo (vazio).</li>
-                <li>Ao clicar no botão de opções, as áreas de Pesquisa Avançada e de Configurar Colunas são mostradas, que são detalhadas à parte</li>
+                <li>Ao clicar no botão de opções, as áreas de Pesquisa Avançada e de Configurar Colunas são mostradas, que são detalhadas à parte.</li>
             </ul>
         </details>
         <details>
@@ -422,17 +428,18 @@
             <ul>
                 <li>O intuito desta área é filtrar a tabela de acordo com 1 ou mais propriedades.</li>
                 <li>Marque a(s) propriedade(s) pela(s) qual(is) que deseja filtrar a tabela.</li>
-                <li>Deixar algum campo em branco de uma propriedade marcada irá buscar por propriedades de valor nulo (útil para disciplinas sem pré-requisito ou sem equivalências por exemplo).</li>
+                <li>Deixar algum campo em branco (sem espaço) de uma propriedade marcada irá buscar por propriedades de valor nulo (útil para disciplinas sem pré-requisito ou sem equivalências, por exemplo, quando combinado com <kbd>=</kbd>).</li>
                 <li>Cada campo aceita uma texto, que é dividido em <b>sentenças</b> por meio dos seguintes símbolos especiais:</li>
-                <li>Utilize o símbolo <kbd>|</kbd> ou <kbd>+</kbd> entre duas ou mais sentenças para juntar os resultados de cada sentença (por exemplo, "Código: CK + 01" mostra tanto as disciplinas que têm "CK" como as que têm "01" nos códigos delas).</li>
-                <li>Utilize o símbolo <kbd>&</kbd> ou <kbd>^</kbd> entre duas ou mais sentenças para mostrar só os resultados que satisfazem todas as sentenças (por exemplo, "Nome: Algor & Estr" mostra as disciplinas que têm "Algor" e ).</li>
-                <li>Utilize o símbolo <kbd>!</kbd> ou <kbd>~</kbd> no início de uma sentença para obter resultados que NÃO contêm tal característica (por exemplo, "Carga Horária: ~96" mostra disciplinas que não têm ch contendo "96").</li>
-                <li>Utilize o símbolo <kbd>=</kbd> no início de uma sentença para obter resultados que contêm a sentença exata, excluindo assim subsentenças (por exemplo, "Nome: =Programação " mostra disciplina com "Programação" no nome e não mostra disciplinas como "Técnicas de Programação").</li>
-                <li>='s são mais prioritários que !'s, que são mais prioritários que &'s, que são mais prioritários que |'s.</li>
+                <ul>
+                    <li>Utilize o símbolo <kbd>|</kbd> ou <kbd>+</kbd> entre duas ou mais sentenças para juntar os resultados de cada sentença (por exemplo, "Código: CK + 01" mostra tanto as disciplinas que têm "CK" como as que têm "01" nos códigos delas).</li>
+                    <li>Utilize o símbolo <kbd>&</kbd> ou <kbd>^</kbd> entre duas ou mais sentenças para mostrar só os resultados que satisfazem todas as sentenças (por exemplo, "Nome: Algor & Estr" mostra as disciplinas que têm "Algor" e ).</li>
+                    <li>Utilize o símbolo <kbd>!</kbd> ou <kbd>~</kbd> no início de uma sentença para obter resultados que NÃO contêm tal característica (por exemplo, "Carga Horária: ~96" mostra disciplinas que não têm ch contendo "96").</li>
+                    <li>Utilize o símbolo <kbd>=</kbd> no início de uma sentença para obter resultados que contêm a sentença exata, excluindo assim subsentenças (por exemplo, "Nome: =Programação " mostra disciplina com "Programação" no nome e não mostra disciplinas como "Técnicas de Programação").</li>
+                    <li>='s são mais prioritários que !'s, que são mais prioritários que &'s, que são mais prioritários que |'s.</li>
+                </ul>
                 <li>As pesquisas não são sensíveis a caixa alta/baixa (maiúscula/minúscula), mas são sensíveis a acentuação e a sinais gráficos.</li>
-                <li>Os espaços de fora das sentenças são ignorados (ex.: " Algor " é o mesmo que "Algor"), mas os de dentro delas não são ignorados (ex: "Estrutura de Dados" não é o mesmo que "EstruturadeDados").</li>
                 <li>Como nos símbolos especiais, é possível unir o resultado de cada propriedade selecionada como "e" (&) ou "ou" (|), que se comportam da mesma forma que seus símbolos (união e interseção de resultados, respectivamente).</li>
-                <li>Para pesquisar por semestre, prefira digitar apenas o número ou abreviação da categoria (ex.: '3', 'opt', 'equi', 'ativ', 't')</li>
+                <li>Para pesquisar por semestre, prefira digitar apenas o número ou abreviação da categoria (ex.: '3', 'opt', 'equi', 'ativ', 't').</li>
                 <li>Para as pesquisas de pré-requisitos e equivalentes, é possível usar tanto código quanto nome (mas não outra propriedade).</li>
                 <li>Para especificar a unidade da carga horária, digite "hr" ou "cr" à frente de cada sentença.</li>
                 <li>Não coloque aspas duplas <kbd>"</kbd> na pesquisa, exceto para realizar uma pesquisa com <a href="https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Guide/Regular_Expressions">RegExp</a>; neste caso, apenas a sentença dentro das aspas (como ""ab+c"") é considerada.</li>
@@ -454,6 +461,14 @@
             <p id="desc_cod"></p>
             <p id="desc_disc"></p> 
             <button id="desc_exit" onclick="close_el('description')">X</button>
+        </div>
+    </div>
+    <div id="chng" class="modal">
+        <div>
+            <label for="chng_c">Selecionar curso:</label>
+            <select id="chng_c"></select>
+            <button onclick="change_c()">Salvar</button>
+            <button onclick="close_el('chng')">X</button>
         </div>
     </div>
 
@@ -478,6 +493,7 @@
         const desc_cod = element('desc_cod');
         const desc_disc = element('desc_disc');
         const l_and = element('l_and');
+        const chng_c = element('chng_c');
 
         function open_el(id) {element(id).style.display='block';}
         function close_el(id) {element(id).style.display='none';}
@@ -516,7 +532,6 @@
             if (attr==='ch') {sorter = upToDown ? (a,b)=> a[attr][0]<b[attr][0] : (a,b)=>a[attr][0]>b[attr][0];}
             else {sorter = upToDown ? (a,b)=>a[attr]<b[attr] : (a,b)=>a[attr]>b[attr];}
             let new_order = merge_sort(ordem, sorter);
-            console.log(new_order.map(({cod}) => cod))
             new_order.forEach(({cod}, i) => table_content.insertBefore(element(cod), table_content.children[i]))
             ordem = new_order;
         }
@@ -663,7 +678,58 @@
             total=0;
         }
 
-        componentes = {
+        const c_list = {};
+        function format_peri(peri) {
+            switch (peri) {
+                case 'o': return "OPTATIVA";
+                case 'e': return "EQUIVALENTE";
+                case 'a': return "A.C.";
+                case 't': return "T.C.C.";
+                case 's': return "ESTÁGIO";
+                default: return peri+"º SEMESTRE";
+            }
+        }
+        function add_abbr(el, cmps) {
+            if (cmps) cmps.split(" ").map(cmp => {
+                let cmp_disc = componentes[cmp]? componentes[cmp].disc : "Disciplina não encontrada";
+                el.appendChild(create('abbr', {textContent: cmp, title: cmp_disc, onclick: () => {
+                    open_el('description'); desc_cod.textContent = cmp; desc_disc.textContent = cmp_disc;
+                }}));
+                el.appendChild(create('span', {textContent: " "}));
+            });
+            else el.appendChild(create('span', {textContent: ''}));
+        }
+        var saved_c;
+        function save_c(val) {
+            let expt = new Date(); expt.setFullYear(expt.getFullYear()+5);
+            document.cookie= "c_name="+val+";expires="+expt.toUTCString()+";path=/";
+            saved_c = val;
+        }
+        function change_c() {
+            let c_name = chng_c.value;
+            if (c_name!==saved_c) {
+                document.cookie= "c_name=;expires="+new Date(1970,1,1).toUTCString()+";path=/";
+                save_c(c_name);
+            }
+            componentes = c_list[c_name] || {};
+            while (table_content.firstChild) table_content.firstChild.remove();
+            lista = Object.keys(componentes).map(cod => {
+                let {disc, peri, pre, eqs, ch} = componentes[cod];
+                ordem.push({cod, disc, peri, pre, eqs, ch});
+                let row = create('div', {className: 'table_row', id: cod});
+                row.appendChild(create('p', {textContent: cod, className: 'cod_p'}));
+                row.appendChild(create('p', {textContent: disc, className: 'disc_p'}));
+                row.appendChild(create('p', {textContent: format_peri(peri), className: 'peri_p'}));
+                add_abbr(row.appendChild(create('p', {className: 'pre_p'})), pre);
+                add_abbr(row.appendChild(create('p', {className: 'eqs_p'})), eqs);
+                row.appendChild(create('p', {textContent: ch[0]+'hr ('+ch[1]+'cr)', className: 'ch_p'}));
+                return table_content.appendChild(row);
+            });
+            element("title").textContent = c_name;
+            close_el('chng');
+        }
+
+        c_list["Ciência da Computação"] = {
             CB0534: {disc: "CÁLCULO DIFERENCIAL E INTEGRAL I", peri: '1', pre: "", eqs: "", ch: [96,6]},
             CB0661: {disc: "MATEMÁTICA DISCRETA", peri: '1', pre: "", eqs: "", ch: [96,6]},
             CK0169: {disc: "CIRCUITOS DIGITAIS", peri: '1', pre: "", eqs: "CK0106 CK0009", ch: [96,6]},
@@ -858,37 +924,151 @@
             EH0306: {disc: "CONTABILIDADE GERAL", peri: 'e', pre: "", eqs: "", ch: [64,4]},
             CK0151: {disc: "INTERFACE HOMEM-MÁQUINA", peri: 'e', pre: "", eqs: "", ch: [64,4]}
         };
-        lista = Object.keys(componentes).map(cod => {
-            let {disc, peri, pre, eqs, ch} = componentes[cod];
-            ordem.push({cod, disc, peri, pre, eqs, ch});
-            let row = create('div', {className: 'table_row', id: cod});
-            row.appendChild(create('p', {textContent: cod, className: 'cod_p'}));
-            row.appendChild(create('p', {textContent: disc, className: 'disc_p'}));
-            row.appendChild(create('p', {textContent: format_peri(peri), className: 'peri_p'}));
-            add_abbr(row.appendChild(create('p', {className: 'pre_p'})), pre);
-            add_abbr(row.appendChild(create('p', {className: 'eqs_p'})), eqs);
-            row.appendChild(create('p', {textContent: ch[0]+'hr ('+ch[1]+'cr)', className: 'ch_p'}));
-            return table_content.appendChild(row);
-        });
-        function format_peri(peri) {
-            switch (peri) {
-                case 'o': return "OPTATIVA";
-                case 'e': return "EQUIVALENTE";
-                case 'a': return "A.C.";
-                case 't': return "T.C.C.";
-                default: return peri+"º SEMESTRE";
-            }
-        }
-        function add_abbr(el, cmps) {
-            if (cmps) cmps.split(" ").map(cmp => {
-                let cmp_disc = componentes[cmp].disc;
-                el.appendChild(create('abbr', {textContent: cmp, title: cmp_disc, onclick: () => {
-                    open_el('description'); desc_cod.textContent = cmp; desc_disc.textContent = cmp_disc;
-                }}));
-                el.appendChild(create('span', {textContent: " "}));
-            });
-            else el.appendChild(create('span', {textContent: ''}));
-        }
+        c_list["Design - Moda"] = {
+            HD0982: {disc: "ANTROPOLOGIA CULTURAL", peri: '1', pre: "", eqs: "", ch: [64, 4]},
+            ICA0064: {disc: "INTRODUÇÃO AO ESTUDO DA MODA", peri: '1', pre: "" , eqs: "ICA0016", ch: [32, 2]},
+            ICA0065: {disc: "FUNDAMENTOS DO DESIGN", peri: '1', pre: "" , eqs: "ICA0006 ICA0001", ch: [96, 6]},
+            ICA0067: {disc: "EQUIPAMENTOS E MATERIAIS DE CONFECÇAO", peri: '1', pre: "" , eqs: "ICA0042", ch: [32, 2]},
+            ICA0068: {disc: "FIBRAS E FIOS", peri: '1', pre: "" , eqs: "ICA0002", ch: [32, 2]},
+            ICA0072: {disc: "PROCESSOS CRIATIVOS", peri: '1', pre: "" , eqs: "ICA0016", ch: [64, 4]},
+            ICA0066: {disc: "MODELAGEM TRIDIMENSIONAL", peri: '2', pre: "", eqs: "ICA0007", ch: [64,4]},
+            ICA0069: {disc: "TEORIA DA MODA", peri: '2', pre: "", eqs: "ICA0024", ch: [32, 2]},
+            ICA0070: {disc: "INDUMENTARIA ANTIGA E MEDIEVAL", peri: '2', pre: "", eqs: "ICA0010", ch: [64, 4]},
+            ICA0071: {disc: "DESENHO DA FIGURA HUMANA", peri: '2', pre: "", eqs: "ICA0012", ch: [64, 4]},
+            ICA1334: {disc: "MODELAGEM PLANA FEMININA", peri: '2', pre: "", eqs: "ICA0021 ICA0019", ch: [64, 4]},
+            ICA0073: {disc: "METODOLOGIA PROJETUAL", peri: '3', pre: "", eqs: "ICA0044", ch: [64, 4]},
+            ICA0075: {disc: "INDUMENTARIA MODERNA E CONTEMPORANEA", peri: '3', pre: "", eqs: "ICA0011", ch: [64, 4]},
+            ICA0076: {disc: "DESENHO TÉCNICO DE MODA", peri: '3', pre: "", eqs: "ICA0014", ch: [64, 4]},
+            ICA0077: {disc: "TÉCNICAS DE MONTAGEM INDUSTRIAL", peri: '3', pre: "ICA0067", eqs: "ICA0004", ch: [64, 4]},
+            ICA0078: {disc: "MODELAGEM PLANA MASCULINA", peri: '3', pre: "ICA0066", eqs: "ICA0023", ch: [64, 4]},
+            ICA0079: {disc: "CONSTRUÇÃO DOS TECIDOS TEXTEIS", peri: '3', pre: "ICA0068", eqs: "ICA0022", ch: [64, 4]},
+            ICA0015: {disc: "DESENHO DE MODA", peri: '4', pre: "ICA0071", eqs: "", ch: [64, 4]},
+            ICA0080: {disc: "MODA, COMPORTAMENTO E CULTURA", peri: '4', pre: "", eqs: "HD0789", ch: [64, 4]},
+            ICA0081: {disc: "COMUNICAÇÃO VISUAL APLICADA", peri: '4', pre: "ICA0065", eqs: "CK0033", ch: [64, 4]},
+            ICA0082: {disc: "PROJETO DE PRODUTO I", peri: '4', pre: "ICA0072 ICA0073", eqs: "ICA0016", ch: [64, 4]},
+            ICA0083: {disc: "MODELAGEM E MONTAGEM EM MALHAS", peri: '4', pre: "ICA0077", eqs: "ICA0004", ch: [64, 4]},
+            ICA0084: {disc: "ERGONOMIA DE PRODUTO", peri: '4', pre: "", eqs: "", ch: [32, 2]},
+            ICA0027: {disc: "TECNOLOGIA DA CONFECCAO", peri: '5', pre: "", eqs: "", ch: [64, 4]},
+            ICA0074: {disc: "DESIGN E MARKETING", peri: '5', pre: "", eqs: "ED0089 ICA2027", ch: [64, 4]},
+            ICA0085: {disc: "PROJETO DE PESQUISA EM MODA", peri: '5', pre: "", eqs: "ICA0024", ch: [64, 4]},
+            ICA0086: {disc: "DESENHO INFORMATIZADO", peri: '5', pre: "", eqs: "ICA0028", ch: [64, 4]},
+            ICA0087: {disc: "PROJETO DE PRODUTO II", peri: '5', pre: "ICA0082", eqs: "ICA0043", ch: [64, 4]},
+            ICA0029: {disc: "PRODUÇÃO DE MODA", peri: '6', pre: "", eqs: "", ch: [32, 2]},
+            ICA0088: {disc: "PESQUISA EM MODA", peri: '6', pre: "ICA0085", eqs: "ICA0045", ch: [64, 4]},
+            ICA0089: {disc: "PROJETO DE PRODUTO III", peri: '6', pre: "ICA0087", eqs: "ICA0044 ICA0018", ch: [64, 4]},
+            ICA1333: {disc: "COMUNICAÇÃO E MODA", peri: '6', pre: "", eqs: "ICA2800", ch: [32, 2]},
+            ICA1338: {disc: "VISUAL MERCHANDISING", peri: '6', pre: "", eqs: "ICA0117 ICA1337 ICA2800", ch: [48, 3]},
+            ICA0090: {disc: "TCC I - PROJETO DE MODA", peri: '7', pre: "", eqs: "ICA0031", ch: [64, 4]},
+            DSN0001: {disc: "ATIVIDADES COMPLEMENTARES", peri: 'a', pre: "", eqs: "", ch: [192, 0]},
+            ICA0091: {disc: "TCC II - ESTUDO MONOGRAFICO", peri: 't', pre: "", eqs: "ICA0031", ch: [64, 4]},
+            ICA0030: {disc: "ESTÁGIO SUPERVISIONADO", peri: 's', pre: "", eqs: "", ch: [160, 10]},
+            ED0038: {disc: "PESQUISA MERCADOLÓGICA", peri: 'o', pre: "", eqs: "ICA2102", ch: [64, 4]},
+            ED0088: {disc: "INTRODUÇÃO A ADMINISTRAÇÃO", peri: 'o', pre: "", eqs: "ED0056", ch: [64, 4]},
+            ED0089: {disc: "MARKETING DE MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ED0129: {disc: "CRIAÇÃO DE NOVOS NEGOCIOS", peri: 'o', pre: "", eqs: "ICA2800 EE0127 ICA0053 ICA0117 ICA0094", ch: [64, 4]},
+            ED0160: {disc: "COMERCIO EXTERIOR", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            HD0789: {disc: "CULTURA BRASILEIRA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            HF0133: {disc: "PSICOSSOCIOLOGIA DA MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            HI0083: {disc: "HISTÓRIA DA CULTURA OCIDENTAL", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            HLL0077: {disc: "LÍNGUA BRASILEIRA DE SINAIS - LIBRAS", peri: 'o', pre: "", eqs: "PD0077", ch: [64, 4]},
+            ICA0036: {disc: "ILUSTRACAO DE MODA", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA0040: {disc: "MODA E CONSUMO", peri: 'o', pre: "", eqs: "", ch: [32, 2]},
+            ICA0047: {disc: "PLANEJAMENTO E ORGANIZACAO DEEVENTOS DE MODA", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA0062: {disc: "DESIGN DE JOIAS", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA0063: {disc: "PESQUISA DE COMPORTAMENTO EM MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0093: {disc: "CIÊNCIA DO CONFORTO", peri: 'o', pre: "", eqs: "", ch: [32, 2]},
+            ICA0095: {disc: "CRIAÇÃO E DESENVOLVIMENTO DEFIGURINO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0096: {disc: "DESENHO DE ACESSORIOS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0097: {disc: "DESENHO DA MODA FEMININA", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA0098: {disc: "DESENHO DE MODA INFANTIL", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA0099: {disc: "DESIGN DE ACESSORIOS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0100: {disc: "FOTOGRAFIA APLICADA A MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0101: {disc: "GESTÃO DA INOVAÇAO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0102: {disc: "GESTÃO DO DESIGN", peri: 'o', pre: "", eqs: "", ch: [32, 2]},
+            ICA0103: {disc: "ILUSTRAÇAO DIGITAL DE MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0104: {disc: "LABORATÓRIO DE PROSPECÇAO DE NOVOS CENARIOS", peri: 'o', pre: "", eqs: "", ch: [32, 2]},
+            ICA0105: {disc: "LABORATÓRIO DA FORMA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0106: {disc: "MODA,DESIGN E SUSTENTABILIDADE", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0107: {disc: "MODA E CULTURA NO BRASIL", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0108: {disc: "MODELAGEM E MONTAGEM DE ACESSORIOS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0109: {disc: "MODELAGEM E MONTAGEM DE PEÇA INTIMA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0110: {disc: "MODELAGEM INFORMATIZADA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0111: {disc: "MODELAGEM TRIDIMENSIONAL AVANÇADA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0112: {disc: "MONTAGEM EM TECIDOS ESPECIAIS", peri: 'o', pre: "ICA1134", eqs: "", ch: [64, 4]},
+            ICA0114: {disc: "PATCHWORK APLICADO A MODA", peri: 'o', pre: "", eqs: "ICA0046", ch: [64, 4]},
+            ICA0115: {disc: "SEMINÁRIOS DE VAREJO DE MODA", peri: 'o', pre: "", eqs: "", ch: [32, 2]},
+            ICA0116: {disc: "SOCIOLOGIA DA MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0118: {disc: "CORPO E MODA", peri: 'o', pre: "", eqs: "", ch: [32, 2]},
+            ICA0119: {disc: "DESENHO DE MODA MASCULINA", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA0465: {disc: "CORPO E EDUCAÇÃO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0465: {disc: "FUNDAMENTOS DA ARTE NA EDUCAÇÃO", peri: 'o', pre: "", eqs: "", ch: [32, 2]},
+            ICA0470: {disc: "MASCARAS E MAQUIAGEM", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0486: {disc: "FIGURINO E ADEREÇOS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0496: {disc: "METODOLOGIA DE PESQUISA EM ARTE,FILOSOFIA E CIÊNCIAS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0501: {disc: "MODELAGEM INFANTIL", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0503: {disc: "OFICINA DE ALFAIATARIA", peri: 'o', pre: "ICA0077 ICA0078", eqs: "", ch: [64, 4]},
+            ICA0505: {disc: "PROJETO DE PRODUTO PARA SEGMENTOINFANTIL", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0506: {disc: "PESQUISA E SEGMENTAÇÃO E MERCADO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0508: {disc: "SLOW FASHION", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0510: {disc: "LABORATÓRIO DE EXPRESSÃO GRÁFICA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0519: {disc: "MODELAGEM PLANA FEMININA: INTERPRETAÇÃO DE MODELOS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA0564: {disc: "GESTÃO DE MARCA", peri: 'o', pre: "", eqs: "", ch: [96, 6]},
+            ICA0815: {disc: "OFICINA DE ROTEIRO", peri: 'o', pre: "", eqs: "", ch: [32, 0]},
+            ICA0853: {disc: "OFICINA DE ROTEIRO (NÃO-FICÇÃO)", peri: 'o', pre: "", eqs: "", ch: [32, 0]},
+            ICA1331: {disc: "DESIGN DE SUPERFÍCIE", peri: 'o', pre: "", eqs: "ICA0113", ch: [48, 3]},
+            ICA1332: {disc: "BENEFICIAMENTO TÊXTIL", peri: 'o', pre: "", eqs: "ICA0092", ch: [48, 2]},
+            ICA1380: {disc: "TÉCNICAS E PROCESSOS CRIATIVOS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA1388: {disc: "SEMIÓTICA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA1612: {disc: "ÉTICA I", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA1650: {disc: "FILOSOFIA DA ARTE", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2001: {disc: "FOTOJORNALISMO I", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2002: {disc: "ESTÉTICA E COMUNICAÇÃO DE MASSA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2011: {disc: "OFICINA DE VIDEO", peri: 'o', pre: "", eqs: "ICA0555", ch: [64, 4]},
+            ICA2014: {disc: "PRODUÇÃO GRÁFICA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2018: {disc: "SEMINÁRIO - OFICINA DE RÁDIO I", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2020: {disc: "INTRODUÇÃO A COMUNICAÇÃO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2024: {disc: "INTRODUÇÃO A PUBLICIDADE", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2029: {disc: "SEMIÓTICA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2030: {disc: "MÍDIA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2041: {disc: "SOCIOLOGIA E COMUNICAÇÃO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2042: {disc: "PLANEJAMENTO GRAFICO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2062: {disc: "TEORIA DA IMAGEM FOTOGRÁFICA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2064: {disc: "COMUNICAÇÃO ORGANIZACIONAL", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2068: {disc: "CIBERCULTURA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2081: {disc: "OFICINA DE PUBLICIDADE", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2085: {disc: "GLOBALIZACAO E CULTURAS CONTEMPORANEAS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2098: {disc: "PLANEJAMENTO DE COMUNICAÇÃO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2100: {disc: "LINGUAGEM AUDIOVISUAL", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2103: {disc: "PRODUÇÃO PUBLICITARIA EM RÁDIO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2106: {disc: "SEMINÁRIO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2467: {disc: "FOTOGRAFIA APLICADA À MODA II", peri: 'o', pre: "ICA0100", eqs: "", ch: [64, 3]},
+            ICA2468: {disc: "FOTOGRAFIA BÁSICA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2484: {disc: "PESQUISA E INOVAÇÃO EM ARTESANATO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2567: {disc: "OFICINA LÚDICA DE ARTE E CRIATIVIDADE", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA2574: {disc: "GÊNERO, SEXUALIDADE E CULTURA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA3244: {disc: "FUNDAMENTOS AUDIOVISUAIS PARA MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA3255: {disc: "CONTROLE DE QUALIDADE NO PROJETO DE MODA", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            ICA3256: {disc: "DESENHO DA CABEÇA PARA CROQUIS DE MODA", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA3257: {disc: "DESENHO TÉCNICO DE MODA INFORMATIZADO", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA3258: {disc: "ILUSTRAÇÃO DE MODA AVANÇADA", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA3259: {disc: "REPRESENTAÇÃO GRÁFICA DE TEXTURAS EM MODA", peri: 'o', pre: "", eqs: "", ch: [48, 3]},
+            ICA3260: {disc: "TÉCNICAS DE ACABAMENTOS EM COSTURAS DO VESTUÁRIO", peri: 'o', pre: "ICA0077", eqs: "", ch: [64, 4]},
+            ICA3270: {disc: "MODELAGEM ERGONÔMICA DO VESTUÁRIO PARA NECESSIDADES ESPECIAIS", peri: 'o', pre: "ICA1134", eqs: "", ch: [64, 4]},
+            ICA3333: {disc: "MODA E ATIVISMO", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            PRG0002: {disc: "RELAÇOES ETNICO-RACIAIS E AFRICANIDADES", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            PRG0003: {disc: "EDUCAÇÃO AMBIENTAL", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            PRG0004: {disc: "EDUCAÇÃO EM DIREITOS HUMANOS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            PRG0005: {disc: "DIFERENÇA E ENFRENTAMENTO PROFISSIONAL NAS DESIGUALDADES SOCIAIS", peri: 'o', pre: "", eqs: "", ch: [64, 4]},
+            TG0465: {disc: "HISTÓRIA DA ARTE I", peri: 'o', pre: "", eqs: "TG0448", ch: [64, 4]},
+            TG0466: {disc: "HISTÓRIA DA ARTE II", peri: 'o', pre: "", eqs: "", ch: [64, 4]}
+        };
+
+        let c_keys = Object.keys(c_list), c_0 = c_keys[0], c_n;
+        c_keys.forEach(c_name=> chng_c.appendChild(create('option', {value: c_name, textContent: c_name})));
+        let saved_kv = document.cookie.split(';').find(kv => kv.startsWith("c_name="));
+        if (!saved_kv) save_c(c_0);
+        chng_c.value = saved_c = saved_kv? saved_kv.split('=')[1] : c_0;
+        change_c();
 
     </script>
 </body>
